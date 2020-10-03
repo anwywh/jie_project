@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.jiejie.equib.bean.EquibMapper">
+	<resultMap type="Equib" id="EquibMap">
+    	<result column="e_no" property="equibNO" />
+		<result column="e_num" property="equibNum" />
+		<result column="e_name" property="equibName" />
+		<result column="e_type" property="equibType" />
+		<result column="e_sta" property="equibState" />
+		<result column="e_work" property="equibWork" />
+		<result column="e_check" property="equibCheck" />
+		<result column="e_time" property="equibTime" />
+		<result column="e_cout" property="equibCount" />
+		<result column="back" property="equibBack" />
+
+	</resultMap>
+	
+	
+	
+		<update id="updateTime" parameterType="Map">
+	UPDATE equip
+	SET e_time=#{time} 
+	WHERE e_no=#{id} 
+	</update>
+	
+	
+	 <select id="work" resultMap="EquibMap">
+	select * from equip where e_work=0 and e_check=1 
+	</select>
+	
+	 <select id="state" resultMap="EquibMap">
+	select * from equip where e_work=2
+	</select>
+	
+	 <select id="delete" resultMap="EquibMap">
+	select * from equip where e_work=3
+	</select>
+	
+	 <select id="count" resultMap="EquibMap">
+	select * from equip
+	WHERE e_cout>0
+	order by e_cout desc
+	</select>
+	<!--  设备列表	
+	设备操作 -->
+	<update id="applyDelete" parameterType="int" >
+		UPDATE equip
+	SET e_work=3
+	WHERE e_no=#{selectId14} 
+	</update>
+	
+	 <update id="applyState" parameterType="map" >
+		UPDATE equip
+	SET e_work=1 , e_sta='正常',e_cout=e_cout+#{paste}
+	WHERE e_no=#{id} 
+	</update>
+	 <update id="applyWorked" parameterType="int" >
+		UPDATE equip
+	SET e_work=2 , e_sta='故障'
+	WHERE e_no=#{selectId13} 
+	</update>
+	
+	<update id="applyWork" parameterType="int" >
+		UPDATE equip
+	SET e_work=1
+	WHERE e_no=#{selectId2} 
+	</update>
+	
+	<update id="updateEquib" parameterType="com.jiejie.equib.bean.Equib" >
+		UPDATE equip
+	SET e_name=#{equibName},e_type=#{equibType},e_num=#{equibNum},back=#{equibBack}
+	WHERE e_no=#{equibNO} 
+	</update> 
+	
+	<select id="selectById" parameterType="int" resultMap="EquibMap">
+	select * from equip where e_no=#{selectId2}
+	</select>
+	
+	<!-- 审核通过 -->
+	<update id="applyCheck" parameterType="int" >
+		UPDATE equip
+	SET e_check=1
+	WHERE e_no=#{selectId1} 
+	</update>
+	<!-- 审核通过
+	设备操作  -->
+	
+	
+	
+	<select id="listDynamicSql" parameterType="map" resultMap="EquibMap">
+	select * from equip 
+	<where>	
+	<if test="equibName!=null">
+	e_name like #{equibName}
+	</if>
+	</where>
+	and e_check =1 and e_work=1
+	order by e_no desc limit  #{from}, #{size}
+	</select>
+	
+	<select id="totaldyanmicCount" resultType="int" parameterType="map">
+	select count(*) from equip 
+	<where>	
+	<if test="equibName!=null">
+	e_name like #{equibName}
+	</if>
+	</where>
+	and e_check =1 and e_work=1
+	</select>
+	
+	<select id="index" parameterType="Map" resultMap="EquibMap">
+	select * from equip where e_check=1 and e_work=1 limit #{from}, #{size}
+	</select>
+	
+	<select id="totalIndexCount" resultType="int">
+	select count(*) from equip where e_check=1 and e_work=1
+	</select>
+	
+	<select id="totalCount" resultType="int">
+	select count(*) from equip where e_check=0
+	</select>
+	
+	<select id="check" parameterType="Map" resultMap="EquibMap">
+	select * from equip where e_check=0 limit #{from}, #{size}
+	</select>
+	
+	<insert id="addcheck" parameterType="com.jiejie.equib.bean.Equib">
+	insert into equip(e_num,e_name,e_type,back,e_time,e_cout,e_sta)
+	values(#{equibNum},#{equibName},#{equibType},#{equibBack},#{equibTime},0,'正常')
+	</insert>
+	
+	<select id="select" parameterType="int" resultMap="EquibMap">
+	select * from equip where e_num=#{id}
+	</select>
+	
+	<select id="selectAll" parameterType="int" resultMap="EquibMap">
+	select * from equip 
+	</select>
+
+
+</mapper>
